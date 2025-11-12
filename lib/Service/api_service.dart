@@ -1,3 +1,4 @@
+import 'package:hng4_cryptowallet_app/models/coin_graph_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:hng4_cryptowallet_app/models/coin_list.dart';
 import 'dart:convert'; 
@@ -44,4 +45,18 @@ class CoinListApiService {
       throw Exception('Failed to load top coins');
     }
   }
+
+//API call for the GraphData used to get the graph
+Future<List<GraphData>> fetchGraphData(String coinId, String days) async {
+  final url = 'https://api.coingecko.com/api/v3/coins/$coinId/ohlc?vs_currency=usd&days=$days';
+  final response = await http.get(Uri.parse(url), headers: headers);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = jsonDecode(response.body);
+    return data.map((item) => GraphData.fromList(item)).toList();
+  } else {
+    throw Exception('Failed to load OHLC data');
+  }
+}
+
 }

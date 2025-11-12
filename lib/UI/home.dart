@@ -74,15 +74,15 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(height: 25),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 35.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
               child: Text(
                 'CryptoPal',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
-                  color: Colors.orangeAccent,
+                  color: Colors.teal[700],
                 ),
               ),
             ),
@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                             (index) {
                               return ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.amber,
+                                  backgroundColor: Colors.teal[700],
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(40),
                                   ),
