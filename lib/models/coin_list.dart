@@ -6,7 +6,7 @@ class CoinList {
   final String imageurl;
   final double currentprice;
   final double pricechangepercentage24h;
-  final List<double> sparklinein;
+  final List<double> sparkline_in_7d;
 
 // initializing the constructor named-parameter
   CoinList({
@@ -16,7 +16,7 @@ class CoinList {
     this.imageurl = '',
     this.currentprice = 0.0,
     this.pricechangepercentage24h = 0.0,
-    this.sparklinein = const [],
+    this.sparkline_in_7d = const [],
   });
 
 
@@ -29,7 +29,7 @@ class CoinList {
       currentprice: (json['current_price'] != null) ? json['current_price'].toDouble() : 0.0,
       pricechangepercentage24h: (json['price_change_percentage_24h'] != null) 
       ? json['price_change_percentage_24h'].toDouble() : 0.0,
-      sparklinein: json['sparkline_in_7d'] != null && json['sparkline_in_7d']['price'] != null
+      sparkline_in_7d: json['sparkline_in_7d'] != null && json['sparkline_in_7d']['price'] != null
       ? List<double>.from(json['sparkline_in_7d']['price'].map((x) => x.toDouble())) : [],
       
       );

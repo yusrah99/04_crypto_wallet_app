@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hng4_cryptowallet_app/Service/api_service.dart';
 import 'package:hng4_cryptowallet_app/UI/all_coins.dart';
+import 'package:hng4_cryptowallet_app/UI/coins_detail.dart';
 import 'package:hng4_cryptowallet_app/UI/home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -28,8 +29,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: HomePage(),
