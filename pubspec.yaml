@@ -37,6 +37,9 @@ dependencies:
   flutter_dotenv: ^6.0.0
   http: ^1.6.0
   fl_chart: ^1.1.1
+  h: ^0.0.1
+  hive_flutter: ^1.1.0
+  build_runner: ^2.10.2
 
 dev_dependencies:
   flutter_test:
