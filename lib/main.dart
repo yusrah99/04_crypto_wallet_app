@@ -1,40 +1,36 @@
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hng4_cryptowallet_app/Service/api_service.dart';
-import 'package:hng4_cryptowallet_app/UI/all_coins.dart';
-import 'package:hng4_cryptowallet_app/UI/coins_detail.dart';
 import 'package:hng4_cryptowallet_app/UI/home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
- Future <void> main() async {
-  // load env file
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
   await dotenv.load(fileName: "key.env");
+
+  // Initialize Hive
+  await Hive.initFlutter();
+  await Hive.openBox('coinsBox');   // Coin list cache
+  await Hive.openBox('graphBox');   // Graph data cache
+
   runApp(const MyApp());
-// see if api service works
-  final apiService = CoinListApiService();
-  try {
-    final coinList = await apiService.fetchCoinList();
-    print('Fetched ${coinList.length} coins');
-  } catch (e) {
-    print('Error fetching coin list: $e');
-    
-    
-  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'CryptoPal',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
-

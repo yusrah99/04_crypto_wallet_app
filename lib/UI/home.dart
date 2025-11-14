@@ -6,6 +6,7 @@ import 'package:hng4_cryptowallet_app/UI/all_coins.dart';
 import 'package:hng4_cryptowallet_app/UI/coins_detail.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive/hive.dart';
 import '../models/coin_list.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,6 +28,8 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
   bool isError = false;
 
+  static const String coinBox = 'coinsBox';
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +41,16 @@ class _HomePageState extends State<HomePage> {
     const String baseUrl = 'https://api.coingecko.com/api/v3';
     final headers = {'x-cg-demo-api-key': apiKey};
 
+    //  Load cached coins first
+    var box = Hive.box(coinBox);
+    if (box.isNotEmpty) {
+      setState(() {
+        topCoins = box.values.map((map) => CoinList.fromMap(map)).take(10).toList();
+        isLoading = false;
+      });
+    }
+
+    // Fetch fresh top coins from API
     try {
       final response = await http.get(
         Uri.parse(
@@ -47,9 +60,19 @@ class _HomePageState extends State<HomePage> {
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
+        List<CoinList> coins = data.map((json) => CoinList.fromJson(json)).toList();
+
+        // Update Hive
+        await box.clear();
+        for (var coin in coins) {
+          await box.put(coin.id, coin.toMap());
+        }
+
+        // Update UI
         setState(() {
-          topCoins = data.map((json) => CoinList.fromJson(json)).toList();
+          topCoins = coins;
           isLoading = false;
+          isError = false;
         });
       } else {
         setState(() {
@@ -58,10 +81,13 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } catch (e) {
-      setState(() {
-        isError = true;
-        isLoading = false;
-      });
+      print('API fetch failed, using Hive data if available: $e');
+      if (topCoins.isEmpty) {
+        setState(() {
+          isError = true;
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -228,8 +254,6 @@ class _HomePageState extends State<HomePage> {
                                         final coin = topCoins[index];
                                         final sparkline = coin.sparkline_in_7d;
 
-                          
-
                                         double minY, maxY;
 
                                         if (sparkline != null &&
@@ -247,14 +271,14 @@ class _HomePageState extends State<HomePage> {
 
                                         return InkWell(
                                           onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => CoinsDetail(coin: coin),
-                                            ),
-                                          );
-                                        },
-
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CoinsDetail(coin: coin),
+                                              ),
+                                            );
+                                          },
                                           child: Container(
                                             margin: const EdgeInsets.symmetric(
                                                 vertical: 6, horizontal: 12),
@@ -279,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                                                   height: 40,
                                                 ),
                                                 const SizedBox(width: 10),
-                                          
+
                                                 // coin name and symbol
                                                 Expanded(
                                                   child: Column(
@@ -303,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                                                     ],
                                                   ),
                                                 ),
-                                          
+
                                                 // price
                                                 Column(
                                                   children: [
@@ -318,7 +342,7 @@ class _HomePageState extends State<HomePage> {
                                                   ],
                                                 ),
                                                 const SizedBox(width: 8),
-                                          
+
                                                 // sparkline chart
                                                 sparkline != null &&
                                                         sparkline.isNotEmpty
